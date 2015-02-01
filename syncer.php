@@ -91,7 +91,7 @@ foreach ($config['labels'] as $label => $color) {
         }
 
         if (ltrim($color, '#') !== $currentLabels[$canonicalLabel]['color']) {
-            echo sprintf('UPDATE label "%s" change color to "%s"', $currentLabels[$canonicalLabel]['color'], $color).PHP_EOL;
+            echo sprintf('UPDATE label "%s" change color to "%s"', $label, $color).PHP_EOL;
         }
 
         if (!$dryRun) {
