@@ -121,4 +121,21 @@ foreach ($config['labels'] as $label => $color) {
     }
 }
 
+$localLabels = array_map(
+    function ($value) {
+        return strtolower(trim($value));
+    },
+    array_keys($config['labels'])
+);
+
+// Look for labels that are present in the repository
+// But not in the local, these should be removed. But that's not done here ;)
+foreach ($currentLabels as $label) {
+    $canonicalLabel = strtolower($label['name']);
+
+    if (!in_array($canonicalLabel, $localLabels, true)) {
+       echo sprintf('INF Label "%s" is present in the repository but not in the local labels list.', $label['name']).PHP_EOL;
+    }
+}
+
 echo PHP_EOL."DONE!".PHP_EOL;
