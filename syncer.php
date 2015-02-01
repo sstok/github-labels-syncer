@@ -26,8 +26,10 @@ if (!isset($config['labels']) || !is_array($config['labels']) || [] === $config[
     throw new \RuntimeException('I give-up! I refuse to do nothing. Configure the labels in config.php');
 }
 
-if (empty($_SERVER['argv'][1]) || empty($_SERVER['argv'][2])) {
-    echo "Usage: php syncer.php <org-or-user> <repo-name>";
+$dryRun = !empty($_SERVER['argv'][1]) && '--dry-run' === $_SERVER['argv'][1];
+
+if (empty($_SERVER['argv'][$dryRun ? 3 : 1]) || empty($_SERVER['argv'][2])) {
+    echo "Usage: php syncer.php [--dry-run] <org-or-user> <repo-name>";
 
     exit(1);
 }
@@ -50,8 +52,13 @@ if (!is_array($client->api('me')->show())) {
     );
 }
 
-$org = $_SERVER['argv'][1];
-$repo = $_SERVER['argv'][2];
+if ($dryRun) {
+    $org = $_SERVER['argv'][2];
+    $repo = $_SERVER['argv'][3];
+} else {
+    $org = $_SERVER['argv'][1];
+    $repo = $_SERVER['argv'][2];
+}
 
 $labelsApi = $client->api('repository')->labels();
 /** @var \Github\Api\Repository\Labels $labelsApi */
@@ -63,7 +70,7 @@ foreach ($fetchedLabels as $label) {
     $currentLabels[strtolower($label['name'])] = $label;
 }
 
-echo PHP_EOL.sprintf('START SYNCING LABELS ON "%s"/"%s"', $org, $repo).PHP_EOL.PHP_EOL;
+echo PHP_EOL.sprintf('START%s SYNCING LABELS ON "%s"/"%s"', $dryRun ? ' [dry-run]' : '', $org, $repo).PHP_EOL.PHP_EOL;
 
 // Start syncing process
 // Check if the labels are exists
@@ -87,17 +94,30 @@ foreach ($config['labels'] as $label => $color) {
             echo sprintf('UPDATE label "%s" change color to "%s"', $currentLabels[$canonicalLabel]['color'], $color).PHP_EOL;
         }
 
-        $labelsApi->update($org, $repo, $currentLabels[$canonicalLabel]['name'], [
-            'name' => $label,
-            'color' => ltrim($color, '#'),
-        ]);
+        if (!$dryRun) {
+            $labelsApi->update(
+                $org,
+                $repo,
+                $currentLabels[$canonicalLabel]['name'],
+                [
+                    'name' => $label,
+                    'color' => ltrim($color, '#'),
+                ]
+            );
+        }
     } else {
         echo sprintf('ADDING label "%s" with color "%s"', $label, $color).PHP_EOL;
 
-        $labelsApi->create($org, $repo, [
-            'name' => $label,
-            'color' => ltrim($color, '#'),
-        ]);
+        if (!$dryRun) {
+            $labelsApi->create(
+                $org,
+                $repo,
+                [
+                    'name' => $label,
+                    'color' => ltrim($color, '#'),
+                ]
+            );
+        }
     }
 }
 
