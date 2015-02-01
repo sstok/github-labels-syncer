@@ -1,0 +1,16 @@
+{
+    "name": "sstok/github-label-syncer",
+    "description": "GitHub adapter for Gush",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sebastiaan Stok",
+            "email": "s.stok@rollercapes.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.4",
+        "ext-curl": "*",
+        "knplabs/github-api": "~1.3.1"
+    }
+}

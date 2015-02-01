@@ -1,0 +1,48 @@
+<?php
+
+return [
+    // Change this to your GitHub token
+    // Create a new one at: https://github.com/settings/tokens/new
+    // enable "repo" scope
+    'token' => 'change-me',
+
+    // Labels as: label => color (in #hex)
+    // eg. 'Bug' => #e10c02
+    'labels' => [
+        // Type
+        'Feature' => '#84b6eb',
+        'Bug' => '#e10c02',
+        'Security issue' => '#ff8c00',
+        'Question' => '#cc317c',
+
+        // Priority:
+        'Nice to have' => '#02d7e1',
+        'Low priority' => '#009800',
+        'High priority' => '#fbca04',
+        'Critical priority' => '#ff8c00',
+        'Release blocker' => '#ff0000',
+
+        // Special labels:
+        'DX' => '#5319e7',
+        'Hackdag' => '#009800',
+        'RFC' => '#fbca04',
+        'Backlog' => '#ff0080',
+        'BC Break' => '#e10c02',
+
+        // Closed reason label (to be ignored)
+        'wontfix' => '#e6e6e6',
+        'invalid' => '#e6e6e6',
+        'duplicate' => '#e6e6e6',
+
+        //Workflow labels:
+        'Has PR' => '#cc317c',
+        'Awaiting feedback' => '#cc317c',
+        'Unconfirmed' => '#444444',
+
+        // Duplicate for each component.
+        // //'[Component name]' => '#cc317c',
+
+        // Pull requests only
+        'WIP' => '#006b75',
+    ],
+];
