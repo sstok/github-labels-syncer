@@ -27,6 +27,7 @@ if (!isset($config['labels']) || !is_array($config['labels']) || [] === $config[
 }
 
 $dryRun = !empty($_SERVER['argv'][1]) && '--dry-run' === $_SERVER['argv'][1];
+$autoRemove = 'yes' === getenv('GITHUB_AUTO_REMOVE_LABEL');
 
 if (empty($_SERVER['argv'][$dryRun ? 3 : 1]) || empty($_SERVER['argv'][2])) {
     echo "Usage: php syncer.php [--dry-run] <org-or-user> <repo-name>";
@@ -134,7 +135,17 @@ foreach ($currentLabels as $label) {
     $canonicalLabel = strtolower($label['name']);
 
     if (!in_array($canonicalLabel, $localLabels, true)) {
-       echo sprintf('INF Label "%s" is present in the repository but not in the local labels list.', $label['name']).PHP_EOL;
+        if (!$dryRun && $autoRemove) {
+            $labelsApi->remove(
+                $org,
+                $repo,
+                $label['name']
+            );
+
+            echo sprintf('REMOVING Label "%s"; present in the repository but not in the local labels list.', $label['name']).PHP_EOL;
+        } else {
+            echo sprintf('INF Label "%s" is present in the repository but not in the local labels list.', $label['name']).PHP_EOL;
+        }
     }
 }
 
