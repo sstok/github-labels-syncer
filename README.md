@@ -5,7 +5,7 @@ Ensures you're GitHub repositories have the correct labels.
 
 *Does not remove existing labels or updates issue/pull request.*
 
-You need at least PHP 5.4, Composer and a GitHub account.
+You need at least PHP 7.2, Composer and a GitHub account.
 
 > GitHub enterprise is not supported yet :cry:
 > But if you need this, please create an issue :blush:
@@ -30,11 +30,9 @@ git clone https://github.com/sstok/github-labels-syncer.git gh-label-sync
 cd gh-label-sync
 ```
 
-Download composer.
+Download and install composer.
 
-```bash
-php -r "readfile('https://getcomposer.org/installer');" | php
-```
+https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos
 
 Install the dependencies.
 
