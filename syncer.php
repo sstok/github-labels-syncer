@@ -1,7 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 error_reporting(E_ALL | E_STRICT);
 date_default_timezone_set('UTC');
+
+use Github\Client as GitHubClient;
+use Github\HttpClient\Builder;
+use GuzzleHttp\Client as GuzzleClient;
 
 if (!file_exists(__DIR__.'/vendor/autoload.php')) {
     throw new \RuntimeException('Did not find vendor/autoload.php. Did you run "composer install"?');
@@ -35,23 +41,23 @@ if (empty($_SERVER['argv'][$dryRun ? 3 : 1]) || empty($_SERVER['argv'][2])) {
     exit(1);
 }
 
-// Now lets see if we get into the Hub
-$client = new Github\Client();
+// ------------
+// Client stuff
+// ------------
 
-if (false !== getenv('GITHUB_DEBUG')) {
-    $client->getHttpClient()->addSubscriber(\Guzzle\Plugin\Log\LogPlugin::getDebugPlugin());
-}
+$httpClient = new GuzzleClient(['debug' => getenv('GITHUB_DEBUG') !== false]);
+$clientBuilder = new Builder($httpClient);
 
-$client->authenticate(
-    $config['token'],
-    Github\Client::AUTH_HTTP_TOKEN
-);
+$client = new GitHubClient($clientBuilder);
+$client->authenticate($config['token'], null, GitHubClient::AUTH_ACCESS_TOKEN);
 
 if (!is_array($client->api('me')->show())) {
     throw new \RuntimeException(
-        'It seems you misconfigured you\'re token. Or GitHub is down. Either way, you are not logged-in.'
+        'It seems you mis-configured you\'re token. Or GitHub is down. Either way, you are not logged-in.'
     );
 }
+
+// ----
 
 if ($dryRun) {
     $org = $_SERVER['argv'][2];
@@ -61,8 +67,8 @@ if ($dryRun) {
     $repo = $_SERVER['argv'][2];
 }
 
-$labelsApi = $client->api('repository')->labels();
 /** @var \Github\Api\Repository\Labels $labelsApi */
+$labelsApi = $client->api('repository')->labels();
 
 $fetchedLabels = $labelsApi->all($org, $repo);
 $currentLabels = [];
@@ -149,4 +155,4 @@ foreach ($currentLabels as $label) {
     }
 }
 
-echo PHP_EOL."DONE!".PHP_EOL;
+echo PHP_EOL . 'DONE!' . PHP_EOL;
